@@ -24,6 +24,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 import java.util.zip.ZipEntry;
@@ -138,9 +140,11 @@ public class SampleDexDiffPatchInternal extends com.tencent.tinker.lib.patch.Dex
             // only use parallel dex optimizer for art
             if (ShareTinkerInternals.isVmArt()) {
                 failOptDexFile.clear();
+                //List list = java.util.Arrays.asList(files);
                 // try parallel dex optimizer
+                List filesList = Arrays.asList(files);
                 TinkerParallelDexOptimizer.optimizeAll(
-                        files, optimizeDexDirectoryFile,
+                        filesList, optimizeDexDirectoryFile,
                         new TinkerParallelDexOptimizer.ResultCallback() {
                             long startTime;
 
@@ -170,9 +174,12 @@ public class SampleDexDiffPatchInternal extends com.tencent.tinker.lib.patch.Dex
                     try {
                         String outputPathName = SharePatchFileUtil.optimizedPathFor(retryDexFile, optimizeDexDirectoryFile);
 
+                        String optDirectory = optimizeDexDirectory;
+                        String dexName = retryDexFile.getName();
+                        ArrayList<File> dexFileList = new ArrayList<>();
+                        dexFileList.add(retryDexFile);
                         if (!SharePatchFileUtil.isLegalFile(retryDexFile)) {
-                            manager.getPatchReporter().onPatchDexOptFail(patchFile, retryDexFile,
-                                    optimizeDexDirectory, retryDexFile.getName(), new TinkerRuntimeException("retry dex optimize file is not exist, name: " + retryDexFile.getName()));
+                            manager.getPatchReporter().onPatchDexOptFail(patchFile, dexFileList, new TinkerRuntimeException("retry dex optimize file is not exist, name: " + retryDexFile.getName()));
                             return false;
                         }
                         TinkerLog.i(TAG, "try to retry dex optimize file, path: %s, size: %d", retryDexFile.getPath(), retryDexFile.length());
@@ -183,7 +190,11 @@ public class SampleDexDiffPatchInternal extends com.tencent.tinker.lib.patch.Dex
                                 retryDexFile.getPath(), new File(outputPathName).length(), (System.currentTimeMillis() - start));
                     } catch (Throwable e) {
                         TinkerLog.e(TAG, "retry dex optimize or load failed, path:" + retryDexFile.getPath());
-                        manager.getPatchReporter().onPatchDexOptFail(patchFile, retryDexFile, optimizeDexDirectory, retryDexFile.getName(), e);
+                        String optDirectory = optimizeDexDirectory;
+                        String dexName = retryDexFile.getName();
+                        ArrayList<File> dexFileList = new ArrayList<>();
+                        dexFileList.add(retryDexFile);
+                        manager.getPatchReporter().onPatchDexOptFail(patchFile, dexFileList, e);
                         return false;
                     }
                 }
@@ -198,7 +209,11 @@ public class SampleDexDiffPatchInternal extends com.tencent.tinker.lib.patch.Dex
                                 (System.currentTimeMillis() - start));
                     } catch (Throwable e) {
                         TinkerLog.e(TAG, "single dex optimize or load failed, path:" + file.getPath());
-                        manager.getPatchReporter().onPatchDexOptFail(patchFile, file, optimizeDexDirectory, file.getName(), e);
+                        String optDirectory = optimizeDexDirectory;
+                        String dexName = file.getName();
+                        ArrayList<File> dexFileList = new ArrayList<>();
+                        dexFileList.add(file);
+                        manager.getPatchReporter().onPatchDexOptFail(patchFile, dexFileList, e);
                         return false;
                     }
                 }
