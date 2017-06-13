@@ -85,9 +85,9 @@ public class SampleUpgradePatch extends UpgradePatch {
                 manager.getPatchReporter().onPatchVersionCheckFail(patchFile, oldInfo, patchMd5);
                 return false;
             }
-            newInfo = new SharePatchInfo(oldInfo.oldVersion, patchMd5, Build.FINGERPRINT);
+            newInfo = new SharePatchInfo(oldInfo.oldVersion, patchMd5, Build.FINGERPRINT, null);
         } else {
-            newInfo = new SharePatchInfo("", patchMd5, Build.FINGERPRINT);
+            newInfo = new SharePatchInfo("", patchMd5, Build.FINGERPRINT, null);
         }
 
         //check ok, we can real recover a new patch

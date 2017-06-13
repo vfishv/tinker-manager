@@ -23,6 +23,7 @@ import com.tencent.tinker.lib.reporter.DefaultPatchReporter;
 import com.tencent.tinker.loader.shareutil.SharePatchInfo;
 
 import java.io.File;
+import java.util.List;
 
 
 /**
@@ -42,8 +43,8 @@ public class SamplePatchReporter extends DefaultPatchReporter {
     }
 
     @Override
-    public void onPatchDexOptFail(File patchFile, File dexFile, String optDirectory, String dexName, Throwable t) {
-        super.onPatchDexOptFail(patchFile, dexFile, optDirectory, dexName, t);
+    public void onPatchDexOptFail(File patchFile, List<File> dexFile, /*String optDirectory, String dexName,*/ Throwable t) {
+        super.onPatchDexOptFail(patchFile, dexFile, /*optDirectory, dexName,*/ t);
         SampleTinkerReport.onApplyDexOptFail(t);
     }
 
